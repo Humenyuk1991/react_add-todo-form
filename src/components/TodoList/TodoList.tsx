@@ -1,4 +1,8 @@
 import type { Todo } from '../../api/todos';
+import { TodoInfo } from '../TodoInfo/TodoInfo';
+{
+  todos.map(todo => <TodoInfo key={todo.id} todo={todo} />);
+}
 
 type TodoListProps = {
   todos: Todo[];

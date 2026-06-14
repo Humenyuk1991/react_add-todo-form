@@ -1,22 +1,27 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 import usersFromServer from '../api/users';
+import todos, { Todo } from '../api/todos';
 
-export const TodoForm: React.FC = () => {
+type TodoFormProps = {
+  onAdd: (todo: Todo) => void;
+};
+
+export const TodoForm: React.FC<TodoFormProps> = ({ onAdd }) => {
   const [userId, setUserId] = useState('');
   const [title, setTitle] = useState('');
   const [hasUserIdError, setHasUserIdError] = useState(false);
   const [hasTitleError, setHasTitleError] = useState(false);
 
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.target.value);
+  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(event.target.value);
     if (hasTitleError) {
       setHasTitleError(false);
     }
   };
 
-  const handleUserIdChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setUserId(e.target.value);
+  const handleUserIdChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setUserId(event.target.value);
     if (hasUserIdError) {
       setHasUserIdError(false);
     }
@@ -40,9 +45,36 @@ export const TodoForm: React.FC = () => {
     if (hasError) {
       return;
     }
-
-    // TODO: submit the form or call API here
   };
+
+  const maxId = Math.max(1, ...todos.map(todo => todo.id));
+  //const user = usersFromServer.find(user => user.id === Number(userId));
+
+  //onAdd({
+  // id: maxId + 1,
+  //title,
+  //userId: Number(userId),
+  // completed: false,
+  // user: user,
+  //});
+  //setTitle('');
+  //setUserId('');
+
+  //<TodoForm onAdd={handleAddTodo} />;
+
+  const newTodo = {
+    id: maxId + 1,
+    title,
+    completed: false,
+    userId: Number(userId),
+    user: usersFromServer.find(user => user.id === Number(userId)),
+  };
+
+  onAdd(newTodo);
+  setTitle('');
+  setUserId('');
+  setHasTitleError(false);
+  setHasUserIdError(false);
 
   return (
     <form
@@ -83,11 +115,12 @@ export const TodoForm: React.FC = () => {
           >
             <select
               id="post-user-id"
+              data-cy="userSelect"
               value={userId}
               onChange={handleUserIdChange}
             >
               <option value="" disabled>
-                Select a user
+                Choose a user
               </option>
               {usersFromServer.map(user => (
                 <option value={String(user.id)} key={user.id}>
@@ -103,7 +136,7 @@ export const TodoForm: React.FC = () => {
       </div>
 
       <div className="buttons">
-        <button type="submit" className="button is-link">
+        <button type="submit" className="button is-link" data-cy="submitButton">
           Add
         </button>
       </div>
