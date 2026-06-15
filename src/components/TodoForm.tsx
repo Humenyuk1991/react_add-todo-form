@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
-import usersFromServer from '../api/users';
-import todos, { Todo } from '../api/todos';
+import type { Todo } from '../api/todos';
+import type { User } from '../api/users';
 
 type TodoFormProps = {
+  todos: Todo[];
+  users: User[];
   onAdd: (todo: Todo) => void;
 };
 
-export const TodoForm: React.FC<TodoFormProps> = ({ onAdd }) => {
+export const TodoForm: React.FC<TodoFormProps> = ({ todos, users, onAdd }) => {
   const [userId, setUserId] = useState('');
   const [title, setTitle] = useState('');
   const [hasUserIdError, setHasUserIdError] = useState(false);
@@ -45,36 +47,29 @@ export const TodoForm: React.FC<TodoFormProps> = ({ onAdd }) => {
     if (hasError) {
       return;
     }
+
+    const selectedUser = users.find(user => user.id === Number(userId));
+
+    if (!selectedUser) {
+      setHasUserIdError(true);
+      return;
+    }
+
+    const maxId = Math.max(0, ...todos.map(currentTodo => currentTodo.id));
+    const newTodo: Todo = {
+      id: maxId + 1,
+      title,
+      completed: false,
+      userId: selectedUser.id,
+      user: selectedUser,
+    };
+
+    onAdd(newTodo);
+    setTitle('');
+    setUserId('');
+    setHasTitleError(false);
+    setHasUserIdError(false);
   };
-
-  const maxId = Math.max(1, ...todos.map(todo => todo.id));
-  //const user = usersFromServer.find(user => user.id === Number(userId));
-
-  //onAdd({
-  // id: maxId + 1,
-  //title,
-  //userId: Number(userId),
-  // completed: false,
-  // user: user,
-  //});
-  //setTitle('');
-  //setUserId('');
-
-  //<TodoForm onAdd={handleAddTodo} />;
-
-  const newTodo = {
-    id: maxId + 1,
-    title,
-    completed: false,
-    userId: Number(userId),
-    user: usersFromServer.find(user => user.id === Number(userId)),
-  };
-
-  onAdd(newTodo);
-  setTitle('');
-  setUserId('');
-  setHasTitleError(false);
-  setHasUserIdError(false);
 
   return (
     <form
@@ -122,7 +117,7 @@ export const TodoForm: React.FC<TodoFormProps> = ({ onAdd }) => {
               <option value="" disabled>
                 Choose a user
               </option>
-              {usersFromServer.map(user => (
+              {users.map(user => (
                 <option value={String(user.id)} key={user.id}>
                   {user.name}
                 </option>
