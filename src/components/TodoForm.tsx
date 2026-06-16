@@ -52,6 +52,7 @@ export const TodoForm: React.FC<TodoFormProps> = ({ todos, users, onAdd }) => {
 
     if (!selectedUser) {
       setHasUserIdError(true);
+
       return;
     }
 
@@ -85,6 +86,7 @@ export const TodoForm: React.FC<TodoFormProps> = ({ todos, users, onAdd }) => {
         <div className="control">
           <input
             id="post-title"
+            data-cy="titleInput"
             className={classNames('input', {
               'is-danger': hasTitleError,
             })}
@@ -125,7 +127,7 @@ export const TodoForm: React.FC<TodoFormProps> = ({ todos, users, onAdd }) => {
             </select>
           </div>
           {hasUserIdError && (
-            <p className="help is-danger">Please select a user</p>
+            <p className="help is-danger">Please choose a user</p>
           )}
         </div>
       </div>

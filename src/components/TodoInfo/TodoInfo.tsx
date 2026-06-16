@@ -1,7 +1,3 @@
-
-
-
-
 type TodoInfoProps = {
   todo: {
     id: number;
@@ -12,8 +8,8 @@ type TodoInfoProps = {
       name: string;
       username: string;
       email: string;
-    }
-  }
+    };
+  };
 };
 
 export const TodoInfo = ({ todo }: TodoInfoProps) => {
